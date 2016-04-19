@@ -4,6 +4,7 @@ class Node:
 	def __init__(self,xPos, yPos, Walkable):
 		self.Walkable = Walkable
 		self.Target = False
+		self.Paraented = False
 		self.Parent = None
 		self.Color = (0,0,0)
 		self.Width = 10
@@ -23,7 +24,7 @@ class Node:
 	def DrawNode(self, screen, color):
 		Margin = self.Margin
 
-		if (self.Walkable and self.Target == False):
+		if (self.Walkable and self.Target == False and self.Paraented == False):
 			color = (0,0,255) 
 		elif (self.Target == False):
 			color = (255,0,0)
@@ -37,3 +38,8 @@ class Node:
 		
 	def GetGScore(self, value):
 		self.gScore = value
+		
+	def SetParent(self, Node):
+		self.Parent = Node
+		Node.Paraented = True
+		Node.ChangeVisual((0,255,0), False)

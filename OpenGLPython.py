@@ -22,7 +22,8 @@ for i in range(xMax):
 		Nodes.append(n)
 		index+=1
 	
-Algorithm  = AStar(Nodes[0], Nodes[25], Nodes)
+Algorithm  = AStar(Nodes)
+Algorithm.DoAlgorithm(xMax,yMax)
 Algorithm.Start.ChangeVisual((0,255,0), True)
 Algorithm.Goal.ChangeVisual((0,255,0), True)
 
