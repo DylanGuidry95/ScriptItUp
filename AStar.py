@@ -1,4 +1,6 @@
 from Node import Node
+from random import randint
+import time
 
 class AStar:
 	def __init__(self, Nodes):
@@ -6,42 +8,104 @@ class AStar:
 		self.Goal = None
 		self.Nodes = Nodes
 		self.openList = []
+		self.closedList = []
+		self.currentNode = None
+		self.Fail = False
 		
+	def Parent(self, Node):
+		if Node.GridPos != self.currentNode.GridPos:
+			Node.SetParent(self.currentNode)
+			Node.ShowParented(True)
+		
+	def SetPath(self):
+		randA = randint(0, len(self.Nodes) - 1)
+		randB = randint(0, len(self.Nodes) - 1)
+		if(self.Nodes[randA].Walkable == False or self.Nodes[randB].Walkable == False):
+			self.SetPath()
+		else:
+			self.Start = self.Nodes[randA]
+			self.Goal = self.Nodes[randB]
+			self.openList.append(self.Start)
+			self.Start.SetTarget(True)
+			self.Goal.SetTarget(True)
+	
 	def DoAlgorithm(self,width, height):
-		startIndex = 0
-		self.Start = self.Nodes[0]
-		self.Goal = self.Nodes[33]
-		self.openList.append(self.Nodes[startIndex])
-		for i in range(0,8):
-			if(startIndex - 1 > 0):
-				self.openList.append(self.Nodes[startIndex - 1])
-				print self.Nodes[startIndex - 1].Pos
-			if(startIndex + 1 < width):
-				self.openList.append(self.Nodes[startIndex + 1])
-				print self.Nodes[startIndex + 1].Pos
-			if(startIndex - width > 0):
-				self.openList.append(self.Nodes[startIndex - width])
-				print self.Nodes[startIndex - width].Pos
-				if(startIndex - width + 1 < width):
-					self.openList.append(self.Nodes[startIndex - width + 1])
-					print self.Nodes[startIndex - width + 1].Pos
-				if(startIndex - width + 1 < width):
-					self.openList.append(self.Nodes[startIndex - width - 1])
-					print self.Nodes[startIndex - width - 1].Pos
-			if(startIndex + width < height):
-				self.openList.append(self.Nodes[startIndex + width])
-				print self.Nodes[startIndex + width].Pos
-				if(startIndex + width + 1 < width):
-					self.openList.append(self.Nodes[startIndex + width + 1])
-					print self.Nodes[startIndex + width + 1].Pos
-				if(startIndex + width - 1 > 0):
-					self.openList.append(self.Nodes[startIndex + width - 1])
-					print self.Nodes[startIndex + width - 1].Pos
-				
+		self.SetPath()		
+		self.currentNode = self.Start
+		self.GetAdjacent(self.currentNode)
+		self.CheckPath()
+			
+	def CheckPath(self):
+		if self.Start in self.openList:
+			self.openList.remove(self.Start)
+			self.closedList.append(self.Start)
+			
+		self.GetManhattan()
+		
+		self.openList.sort(key = lambda Node: Node.fScore)
+		
+		if(self.openList.count > 0):
+			self.currentNode = self.openList[0]
+		else:
+			self.Fail = True
+						
+		self.openList.remove(self.currentNode)
+		self.closedList.append(self.currentNode)
+		self.currentNode.IsPath(True)	
+	
+	def GetAdjacent(self, Location):
+		self.openList = []
+		tempList = []
+		self.Fail = False
+		for n in self.Nodes:
+			if(n.GridPos[0] == Location.GridPos[0] + 1 and n.GridPos[1] == Location.GridPos[1] and n.Walkable == True and n not in self.openList): #Left
+				n.SetGScore(10)
+				self.Parent(n)
+				self.openList.append(n)
+			elif(n.GridPos[0] == Location.GridPos[0] - 1 and n.GridPos[1] == Location.GridPos[1] and n.Walkable == True and n not in self.openList): #Right
+				n.SetGScore(10)
+				self.Parent(n)
+				self.openList.append(n)	
+			elif(n.GridPos[1] == Location.GridPos[1] + 1 and n.GridPos[0] == Location.GridPos[0] and n.Walkable == True and n not in self.openList): #Top
+				n.SetGScore(10)
+				self.Parent(n)
+				self.openList.append(n)	
+			elif(n.GridPos[1] == Location.GridPos[1] - 1 and n.GridPos[0] == Location.GridPos[0] and n.Walkable == True and n not in self.openList): #Bottom
+				n.SetGScore(10)
+				self.Parent(n)
+				self.openList.append(n)
+			elif(n.GridPos[0] == Location.GridPos[0] + 1 and n.GridPos[1] == Location.GridPos[1] + 1 and n.Walkable == True and n not in self.openList): #Top Right
+				n.SetGScore(14)
+				self.Parent(n)
+				self.openList.append(n)
+			elif(n.GridPos[0] == Location.GridPos[0] + 1 and n.GridPos[1] == Location.GridPos[1] - 1 and n.Walkable == True and n not in self.openList): #Bot Right
+				n.SetGScore(14)
+				self.Parent(n)
+				self.openList.append(n)
+			elif(n.GridPos[0] == Location.GridPos[0] - 1 and n.GridPos[1] == Location.GridPos[1] + 1 and n.Walkable == True and n not in self.openList): #Top Left
+				n.SetGScore(14)
+				self.Parent(n)
+				self.openList.append(n)
+			elif(n.GridPos[0] == Location.GridPos[0] - 1 and n.GridPos[1] == Location.GridPos[1] - 1 and n.Walkable == True and n not in self.openList): #Bot Right
+				n.SetGScore(14)
+				self.Parent(n)
+				self.openList.append(n)
+			
+	def GetManhattan(self):
 		for n in self.openList:
-			if(n != self.Start):
-				n.SetParent(self.Start)
-				print n.Pos
-				
-		self.openList.remove(self.Nodes[0])
+			n.SetHScore(10*(abs(n.GridPos[0]-self.Goal.GridPos[0]) + abs(n.GridPos[1]-self.Goal.GridPos[1])))
+			n.fScore = n.GetFScore()
+	
+	def CheckCompletion(self):
+		if(self.currentNode.GridPos == self.Goal.GridPos):
+			for n in self.Nodes:
+				n.Target = False
+				n.Retrace = False
+				n.Path = False
+				n.Paraented = False
+			return True
+		else:
+			return False
+		
+		
 		

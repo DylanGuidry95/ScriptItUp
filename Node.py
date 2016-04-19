@@ -12,34 +12,50 @@ class Node:
 		self.Margin = 10
 		self.Left = (self.Margin + self.Width) * xPos + self.Margin
 		self.Top = (self.Margin + self.Height) * yPos + self.Margin
-		self.Pos = xPos, self.Height - yPos
+		self.WorldPos = xPos, self.Height - yPos
+		self.GridPos = xPos, yPos
 		self.fScore = None
 		self.gScore = None
 		self.hScore = None
+		self.Path = (0,0,0)
+		self.Retrace = False
 		
-	def ChangeVisual(self, Color, Target):
-		self.Color = Color
+	def SetTarget(self,Target):
 		self.Target = Target
 		
+	def ShowParented(self,Paraented):
+		self.Paraented = Paraented
+		
+	def IsPath(self, Path):
+		self.Path = Path
+		
+	def IsRetrace(self, Retrace):
+		self.Retrace = Retrace
+	
 	def DrawNode(self, screen, color):
 		Margin = self.Margin
-
-		if (self.Walkable and self.Target == False and self.Paraented == False):
+		if (self.Walkable == True):
 			color = (0,0,255) 
-		elif (self.Target == False):
+		if (self.Walkable == False):
 			color = (255,0,0)
+		if (self.Paraented == True):
+			color = (0,255,0)
+		if (self.Target == True):
+			color = (255,255,255)
+		if (self.Path == True):
+			color = (255, 0, 255)
+		if (self.Retrace == True):
+			color = (0, 0, 0)
 		gfx.draw.rect(screen, color, (self.Left , self.Top, self.Width, self.Height))
 		
 	def GetFScore(self):
 		return self.hScore + self.hScore
 		
-	def GetHScore(self, value):
+	def SetHScore(self, value):
 		self.hScore = value
 		
-	def GetGScore(self, value):
+	def SetGScore(self, value):
 		self.gScore = value
 		
 	def SetParent(self, Node):
 		self.Parent = Node
-		Node.Paraented = True
-		Node.ChangeVisual((0,255,0), False)

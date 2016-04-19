@@ -1,6 +1,9 @@
 import sys, pygame
 from Node import Node
 from AStar import AStar
+from random import randint
+import time
+
 pygame.init()
 
 size = width, height = 500, 500
@@ -8,32 +11,39 @@ screen = pygame.display.set_mode(size)
 
 Nodes = []
 
-xMax = 10
-yMax = 10
-
-index = 0
-
-for i in range(xMax):
-	for j in range(yMax):
-		if (i >= 4 and i <= 6) and (j <= 8 and j >= 5):
-			n = Node(i, j, False)
+for x in range(0,10):
+	for y in range(0,10):
+		if (randint(0,10) >= 7):
+			n = Node(x, y, False)
 		else:
-			n = Node(i, j, True)
+			n = Node(x, y, True)
 		Nodes.append(n)
-		index+=1
 	
 Algorithm  = AStar(Nodes)
-Algorithm.DoAlgorithm(xMax,yMax)
-Algorithm.Start.ChangeVisual((0,255,0), True)
-Algorithm.Goal.ChangeVisual((0,255,0), True)
 
-print Nodes[0].Color
 
-print Algorithm.Start.Pos, Algorithm.Goal.Pos
+initialStart = True
+
+for n in Algorithm.openList:
+	n.ShowParented(True)
+	
 while 1:
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT: sys.exit()
 	
+	if(initialStart == True):
+		Algorithm.DoAlgorithm(10,10)
+		initialStart = False
+	
+	if(Algorithm.CheckCompletion() == True or Algorithm.Fail == True):
+		time.sleep(2.5)
+		Algorithm.DoAlgorithm(10, 10)
+		
+	elif Algorithm.CheckCompletion() == False:
+		time.sleep(.2)
+		Algorithm.GetAdjacent(Algorithm.currentNode)
+		Algorithm.CheckPath()
+		
 	for i in Nodes:
 		i.DrawNode(screen, (255,255,255))
 	
