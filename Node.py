@@ -13,18 +13,16 @@ class Node:
 		self.Left = (self.Margin + self.Width) * xPos + self.Margin
 		self.Top = (self.Margin + self.Height) * yPos + self.Margin
 		self.WorldPos = xPos, self.Height - yPos
-		self.GridPos = xPos, yPos
+		self.GridPos = [xPos, yPos]
 		self.fScore = 0
 		self.gScore = 0
 		self.hScore = 0
 		self.Path = (0,0,0)
 		self.Retrace = False
+		self.Child = False
 		
 	def SetTarget(self,Target):
 		self.Target = Target
-		
-	def ShowParented(self,Paraented):
-		self.Paraented = Paraented
 		
 	def IsPath(self, Path):
 		self.Path = Path
@@ -38,7 +36,7 @@ class Node:
 			color = (0,0,255) 
 		if (self.Walkable == False):
 			color = (255,0,0)
-		if (self.Paraented == True):
+		if (self.Child == True):
 			color = (0,255,0)
 		if (self.Target == True):
 			color = (255,255,255)
@@ -49,16 +47,24 @@ class Node:
 		gfx.draw.rect(screen, color, (self.Left , self.Top, self.Width, self.Height))
 		
 	def GetFScore(self):
-		return self.hScore + self.hScore
+		return self.fScore
+		
+	def SetFScore(self):
+		self.fScore = self.hScore + self.gScore
+		return self.fScore
 		
 	def SetHScore(self, value):
 		self.hScore = value
 		
 	def SetGScore(self, value):
 		self.gScore = value
-		
+	
+	def GetGScore(self):
+		return self.gScore
+	
 	def IsChild(self, Node):
 		self.Parent = Node
+		self.Child = True
 		
 	def GetGScore(self):
 		return self.gScore

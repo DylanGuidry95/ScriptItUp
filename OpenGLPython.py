@@ -12,12 +12,15 @@ screen = pygame.display.set_mode(size)
 
 Nodes = []
 
-for x in range(0,10):
-	for y in range(0,10):
-		if (randint(0,10) >= 7):
-			n = Node(x, y, False)
+xMax = 7
+yMax = 6
+
+for x in range(0,xMax):
+	for y in range(0,yMax):
+		if x == 3 and (y == 1 or y == 2 or y == 3):
+			n = Node(x,y,False)
 		else:
-			n = Node(x, y, True)
+			n = Node(x,y,True)
 		Nodes.append(n)
 	
 Algorithm  = RestructureAStar(Nodes)
@@ -25,23 +28,13 @@ Algorithm  = RestructureAStar(Nodes)
 
 initialStart = True
 
-for n in Algorithm.openList:
-	n.ShowParented(True)
+
 	
 while 1:
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT: sys.exit()
 	
-	if(initialStart == True):
-		Algorithm.Algorithm(10,10)
-		initialStart = False
-	
-	if(Algorithm.IsGoal() == True or Algorithm.Fail == True):
-		time.sleep(2.5)
-		Algorithm.Algorithm(10, 10)
-		
-	elif Algorithm.IsGoal() == False:
-		time.sleep(.2)
+	if(Algorithm.IsComplete() == False):
 		Algorithm.GetAdjacent()
 		
 	for i in Nodes:
