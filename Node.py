@@ -14,9 +14,9 @@ class Node:
 		self.Top = (self.Margin + self.Height) * yPos + self.Margin
 		self.WorldPos = xPos, self.Height - yPos
 		self.GridPos = xPos, yPos
-		self.fScore = None
-		self.gScore = None
-		self.hScore = None
+		self.fScore = 0
+		self.gScore = 0
+		self.hScore = 0
 		self.Path = (0,0,0)
 		self.Retrace = False
 		
@@ -57,5 +57,8 @@ class Node:
 	def SetGScore(self, value):
 		self.gScore = value
 		
-	def SetParent(self, Node):
+	def IsChild(self, Node):
 		self.Parent = Node
+		
+	def GetGScore(self):
+		return self.gScore

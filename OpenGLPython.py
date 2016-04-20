@@ -3,6 +3,7 @@ from Node import Node
 from AStar import AStar
 from random import randint
 import time
+from RestructureAStar import RestructureAStar
 
 pygame.init()
 
@@ -19,7 +20,7 @@ for x in range(0,10):
 			n = Node(x, y, True)
 		Nodes.append(n)
 	
-Algorithm  = AStar(Nodes)
+Algorithm  = RestructureAStar(Nodes)
 
 
 initialStart = True
@@ -32,17 +33,16 @@ while 1:
 		if event.type == pygame.QUIT: sys.exit()
 	
 	if(initialStart == True):
-		Algorithm.DoAlgorithm(10,10)
+		Algorithm.Algorithm(10,10)
 		initialStart = False
 	
-	if(Algorithm.CheckCompletion() == True or Algorithm.Fail == True):
+	if(Algorithm.IsGoal() == True or Algorithm.Fail == True):
 		time.sleep(2.5)
-		Algorithm.DoAlgorithm(10, 10)
+		Algorithm.Algorithm(10, 10)
 		
-	elif Algorithm.CheckCompletion() == False:
+	elif Algorithm.IsGoal() == False:
 		time.sleep(.2)
-		Algorithm.GetAdjacent(Algorithm.currentNode)
-		Algorithm.CheckPath()
+		Algorithm.GetAdjacent()
 		
 	for i in Nodes:
 		i.DrawNode(screen, (255,255,255))
