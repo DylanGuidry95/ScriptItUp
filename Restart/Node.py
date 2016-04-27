@@ -3,10 +3,6 @@ import pygame as gfx
 class Node:	
 	def __init__(self,xPos, yPos, Walkable):
 		self.Walkable = Walkable
-		self.Target = False
-		self.Paraented = False
-		self.Parent = None
-		self.Color = (0,0,0)
 		self.Width = 10
 		self.Height = 10
 		self.Margin = 10
@@ -17,9 +13,13 @@ class Node:
 		self.fScore = 0
 		self.gScore = 0
 		self.hScore = 0
-		self.Path = (0,0,0)
 		self.Retrace = False
 		self.Child = False
+		self.Target = False
+		self.Paraented = False
+		self.Parent = None
+		self.Path = False
+		self.AdjNodes = []
 		
 	def SetTarget(self,Target):
 		self.Target = Target
@@ -46,7 +46,7 @@ class Node:
 			color = (0, 0, 0)
 		gfx.draw.rect(screen, color, (self.Left , self.Top, self.Width, self.Height))
 		
-	def GetFScore(self):
+	def getF(self):
 		return self.fScore
 		
 	def SetFScore(self):
@@ -59,7 +59,7 @@ class Node:
 	def SetGScore(self, value):
 		self.gScore = value
 	
-	def GetGScore(self):
+	def getG(self):
 		return self.gScore
 	
 	def IsChild(self, Node):

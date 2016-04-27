@@ -11,9 +11,14 @@ class RestructureAStar:
 		self.closedList = []
 		self.currentNode = None
 		self.Fail = False
-		self.Adjacent = []
+		self.CurAdjacent = []
 		self.SetPath()
-		
+		self.setHScore()
+	
+	def setHScore(self):
+		for n in self.Nodes:
+			n.SetHScore(10*(abs(n.GridPos[0] - self.Goal.GridPos[0]) + abs(n.GridPos[1] - self.Goal.GridPos[1])))
+	
 	def SetPath(self):
 		for n in self.Nodes:
 			if n.GridPos == [1,2]:
@@ -27,34 +32,32 @@ class RestructureAStar:
 		self.GetAdjacent()
 		
 	def AddNode(self, Node, gValue):
-		if(Node not in self.openList):
-			Node.SetGScore(10 + self.currentNode.GetGScore())
+		if Node not in self.openList:
 			self.openList.append(Node)
-			Node.IsChild(self.currentNode)
-			self.currentNode.IsPath(True)
-			self.currentNode.SetHScore(10*(abs(Node.GridPos[0]-self.Goal.GridPos[0]) + abs(Node.GridPos[1]-self.Goal.GridPos[1])))
-			self.currentNode.SetFScore()
-		else:
-			if(Node.GetGScore() < self.GetGScore() + gValue):
-				self.openList.remove(self.currentNode)
-				self.closedList.append(self.currentNode)
-				self.currentNode = Node
-				self.openList.append(currentNode)
+			self.CurAdjacent.append(Node)
+		Node.Parent = self.currentNode
+		Node.SetGScore(gValue)
+		Node.SetFScore()
 			
 	def CheckChildren(self):
 		if(self.openList.count > 0):
-			for n in self.openList:
-				self.currentNode = n
-				if(n.SetFScore() < self.currentNode.SetFScore()):
-					self.closedList.append(self.currentNode)
-					self.currentNode = n
-					self.openList.append(n)
-				else: 
-					self.closedList.append(n)
-			
-			self.currentNode.IsPath(True)
-		else:
-			print "No Path"
+			self.openList.sort(key = lambda Node : Node.fScore)
+			self.currentNode = self.openList[0]
+			self.openList.remove(self.currentNode)
+			self.closedList.append(self.currentNode)
+			i = 0
+			for adj in self.CurAdjacent:
+				if adj not in self.openList:
+					self.openList.append(adj)
+					adj.Parent = self.currentNode
+				else:
+					move = 10 if i < 4 else 14
+					movecost = move + self.currentNode.gScore
+					if movecost < adj.gScore:
+						adj.Parent = self.currentNode
+						adj.SetGScore(movecost)
+				i += 1
+			self.GetAdjacent()
 		
 	def IsComplete(self):
 		if(self.Goal not in self.openList):
